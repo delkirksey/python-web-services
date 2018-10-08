@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
 from rest_framework import status
@@ -15,6 +16,9 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 
 
+# @api_view defines the HTTP verbs this view will accept
+# and returns 405 Method Not Allowed for undefined methods
+@api_view(['GET', 'POST'])
 @csrf_exempt
 def game_list(request):
     if request.method == 'GET':
@@ -33,6 +37,7 @@ def game_list(request):
                             status=status.HTTP_400_BAD_REQUEST)
 
 
+@api_view(['GET', 'PUT', 'DELETE'])
 @csrf_exempt
 def game_detail(request, pk):
     try:
