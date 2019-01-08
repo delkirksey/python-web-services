@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     # Django REST Framework
     'rest_framework',
     # Games application
-    'games.apps.GamesConfig'
+    'games.apps.GamesConfig',
+    # Crispy forms
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -131,6 +133,11 @@ STATIC_URL = '/static/'
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'games.pagination.LimitOffsetPaginationWithMaxLimit',
     'PAGE_SIZE': 5,
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework.filters.DjangoFilterBackend',
+        'rest_framework.filters.SearchFilter',
+        'rest_framework.filters.OrderingFilter',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
