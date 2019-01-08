@@ -8,6 +8,8 @@ models.
 """
 
 from rest_framework import serializers
+from django.contrib.auth.models import User
+
 from games.models import Game
 from games.models import GameCategory
 from games.models import Player
@@ -44,19 +46,22 @@ class GameSerializer(serializers.HyperlinkedModelSerializer):
     the target of the relationship by a unique slug attribute,
     the 'name'.
     """
+    owner = serializers.ReadOnlyField(source='owner.username')  # just display the owner username
     game_category = serializers.SlugRelatedField(
         queryset=GameCategory.objects.all(),
-        slug_field='name'
+        slug_field='name'  # shows the related categories name instead of ID (default)
     )
 
     class Meta:
         model = Game
+        depth = 4
         fields = (
             'url',
             'game_category',
             'name',
             'release_date',
-            'played'
+            'played',
+            'owner'
         )
 
 
@@ -116,4 +121,25 @@ class PlayerScoreSerializer(serializers.HyperlinkedModelSerializer):
             'score_date',
             'player',
             'game'
+        )
+
+
+class UserGameSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializes the games related to a user
+    """
+    class Meta:
+        model = Game  # a Game that belongs to a user
+        fields = (
+            'url', 'name'
+        )
+
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    games = UserGameSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = User  # an instance of django.contrib.auth.models.User
+        fields = (
+            'url', 'pk', 'username', 'games'
         )
