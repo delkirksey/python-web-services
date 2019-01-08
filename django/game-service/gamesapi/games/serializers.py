@@ -60,7 +60,8 @@ class GameSerializer(serializers.HyperlinkedModelSerializer):
             'game_category',
             'name',
             'release_date',
-            'played'
+            'played',
+            'owner'
         )
 
 
