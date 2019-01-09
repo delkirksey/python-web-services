@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 
 from games.models import GameCategory
+from games.models import Player
 
 
 class GameCategoryTests(APITestCase):
@@ -29,7 +30,7 @@ class GameCategoryTests(APITestCase):
 
     def test_create_duplicated_game_category(self):
         """
-        Ensure we can create a new GameCategory.
+        Ensure we can create a new GameCategory
         """
         url = reverse('gamecategory-list')
         new_game_category_name = 'New Game Category'
@@ -105,3 +106,62 @@ class GameCategoryTests(APITestCase):
         self.assertEqual(
             response.data['results'][0]['name'],
             game_category_name1)
+
+
+class PlayerTests(APITestCase):
+    def create_player(self, name, gender):
+        url = reverse('player-list')
+        data = {'name': name, 'gender': gender}
+        response = self.client.post(url, data, format='json')
+        return response
+
+    def test_create_and_retrieve_player(self):
+        """
+        Ensure we can create a new Player and then retrieve it
+        """
+        new_player_name = 'New Player'
+        new_player_gender = Player.MALE
+        response = self.create_player(new_player_name, new_player_gender)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Player.objects.count(), 1)
+        self.assertEqual(
+            Player.objects.get().name,
+            new_player_name)
+
+    def test_create_duplicated_player(self):
+        """
+        Ensure we can create a new Player and we cannot create a duplicate
+        """
+        url = reverse('player-list')
+        new_player_name = 'New Female Player'
+        new_player_gender = Player.FEMALE
+        response1 = self.create_player(new_player_name, new_player_gender)
+        self.assertEqual(
+            response1.status_code,
+            status.HTTP_201_CREATED)
+        response2 = self.create_player(new_player_name, new_player_gender)
+        self.assertEqual(
+            response2.status_code,
+            status.HTTP_400_BAD_REQUEST)
+
+    def test_retrieve_players_list(self):
+        """
+        Ensure we can retrieve a player
+        """
+        new_player_name = 'New Female Player'
+        new_player_gender = Player.FEMALE
+        self.create_player(new_player_name, new_player_gender)
+        url = reverse('player-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK)
+        self.assertEqual(
+            response.data['count'],
+            1)
+        self.assertEqual(
+            response.data['results'][0]['name'],
+            new_player_name)
+        self.assertEqual(
+            response.data['results'][0]['gender'],
+            new_player_gender)
