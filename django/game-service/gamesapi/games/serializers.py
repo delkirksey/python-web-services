@@ -14,7 +14,6 @@ from games.models import Game
 from games.models import GameCategory
 from games.models import Player
 from games.models import PlayerScore
-import games.views
 
 
 class GameCategorySerializer(serializers.HyperlinkedModelSerializer):
