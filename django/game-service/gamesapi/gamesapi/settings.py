@@ -43,6 +43,10 @@ INSTALLED_APPS = [
     'games.apps.GamesConfig',
     # Crispy forms
     'crispy_forms',
+    # Django filters
+    'django_filters',
+    # Django nose
+    'django_nose'
 ]
 
 MIDDLEWARE = [
@@ -134,7 +138,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'games.pagination.LimitOffsetPaginationWithMaxLimit',
     'PAGE_SIZE': 5,
     'DEFAULT_FILTER_BACKENDS': (
-        'rest_framework.filters.DjangoFilterBackend',
+        'django_filters.rest_framework.DjangoFilterBackend',
         'rest_framework.filters.SearchFilter',
         'rest_framework.filters.OrderingFilter',
     ),
@@ -152,3 +156,14 @@ REST_FRAMEWORK = {
         'game-categories': '30/hour',
     }
 }
+
+# We want to use nose to run all the tests
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+
+# We want nose to measure coverage on the games app
+NOSE_ARGS = [
+    '--with-coverage',
+    '--cover-erase',
+    '--cover-inclusive',
+    '--cover-package=games',
+]
